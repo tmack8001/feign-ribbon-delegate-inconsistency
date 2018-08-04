@@ -1,0 +1,60 @@
+info:
+  app:
+    name: '@project.name@'
+    version: '@project.version@'
+spring:
+  application.name: '@project.name@'
+
+feign.httpclient.enabled: false
+
+server: # https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java
+  port: 8080
+  connectionTimeout: -1
+  useForwardHeaders: true
+  maxHttpHeaderSize: 65536
+  tomcat.max-threads: 200
+
+spring.metrics.servo.enabled: false
+spring.cloud.netflix.metrics.enabled: false
+
+zuul:
+  ignoredServices: '*'
+  ignoredHeaders: X-B3-SpanId, X-B3-Span-Name, X-B3-TraceId, X-B3-ParentSpanId, X-B3-Sampled,
+    X-Process-Id
+  ignoreSecurityHeaders: false # issue with spring-security on classpath, for details see https://github.com/spring-cloud/spring-cloud-netflix/issues/1096
+  routes:
+    foo-route:
+      path: /foo/**
+      serviceId: foo-service
+      stripPrefix: true
+    bar-route:
+      path: /bar/**
+      serviceId: bar-service
+      stripPrefix: true
+
+
+ribbon:
+  ConnectTimeout: 100
+  ReadTimeout: 5000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 0
+  OkToRetryOnAllOperations: false
+  MaxHttpConnectionsPerHost: 200
+  MaxTotalHttpConnections: 1000
+  eureka:
+    enabled: false
+  eager-load:
+    enabled: true
+    clients: foo-service, bar-service
+
+foo-service:
+  ribbon:
+    listOfServers: http://httpbin:8080/
+    ConnectTimeout: 100
+    ReadTimeout: 700
+
+bar-service:
+  ribbon:
+    listOfServers: http://httpbin:8080/
+    ConnectTimeout: 100
+    ReadTimeout: 700

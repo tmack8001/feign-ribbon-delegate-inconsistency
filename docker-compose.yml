@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  app:
+    build: ./
+    environment:
+      ### Server config ###
+      # JVM
+      - JAVA_OPTS=
+        -Xms128m
+        -Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+    ports:
+      - "8080:8080" # service
+      - "5005:5005" # java debug port
+    links:
+      - "httpbin:httpbin"
+
+  httpbin:
+    image: mccutchen/go-httpbin
+    ports:
+      - "8889:8080"
+    expose:
+      - "8889"
